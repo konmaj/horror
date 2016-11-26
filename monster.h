@@ -55,6 +55,12 @@ using Vampire = Monster<T, vampire>;
 
 template<typename M, typename U>
 void attack(M monster, U victim) {
-	victim->takeDamage(monster->getAttackPower());
+	victim.takeDamage(monster.getAttackPower());
+};
+
+template<typename M, typename T>
+void attack(M monster, Sheriff<T> victim) {
+	victim.takeDamage(monster.getAttackPower());
+	monster.takeDamage(victim.getAttackPower());
 };
 #endif //MONSTER_H_
