@@ -18,19 +18,15 @@ class Monster{
 		T health;
 		T attackPower;
 		
-		T min (T a, T b) {
-			return a < b ? a : b;
-		}
-		
 	public:
 		
 		const std::type_info& valueType = typeid(T);
 		
-		T getHealth() {
+		T getHealth() const{
 			return health;
 		}
 		
-		T getAttackPower() {
+		T getAttackPower() const {
 			return attackPower;
 		}
 		
@@ -40,7 +36,7 @@ class Monster{
 		}
 		
 		void takeDamage(T damage) {
-			health -= min(damage, health);
+			health -= std::min(damage, health);
 		}
 }; 
 
@@ -54,12 +50,12 @@ template<typename T>
 using Vampire = Monster<T, vampire>;
 
 template<typename M, typename U>
-void attack(M monster, U victim) {
+void attack(M &monster, U &victim) {
 	victim.takeDamage(monster.getAttackPower());
 };
 
 template<typename M, typename T>
-void attack(M monster, Sheriff<T> victim) {
+void attack(M &monster, Sheriff<T> &victim) {
 	victim.takeDamage(monster.getAttackPower());
 	monster.takeDamage(victim.getAttackPower());
 };
