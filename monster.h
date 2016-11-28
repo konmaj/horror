@@ -3,6 +3,8 @@
 #define MONSTER_H_
 
 #include <typeinfo>
+#include <algorithm>
+#include <type_traits>
 #include "citizen.h"
 
 enum monst {
@@ -12,7 +14,7 @@ enum monst {
 };
 
 template <typename T, enum monst,
-	typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type>
+	typename = typename std::enable_if_t<std::is_arithmetic<T>::value, T>>
 class Monster{
 	private:
 		T health;
@@ -20,7 +22,7 @@ class Monster{
 		
 	public:
 		
-		const std::type_info& valueType = typeid(T);
+		using valueType = T;
 		
 		T getHealth() const{
 			return health;
@@ -30,10 +32,8 @@ class Monster{
 			return attackPower;
 		}
 		
-		Monster (T health, T attackPower) {
-			this->health = health;
-			this->attackPower = attackPower;
-		}
+		Monster (T health_, T attackPower_) 
+				: health(health_), attackPower(attackPower_){}
 		
 		void takeDamage(T damage) {
 			health -= std::min(damage, health);
@@ -50,12 +50,14 @@ template<typename T>
 using Vampire = Monster<T, vampire>;
 
 template<typename M, typename U>
-void attack(M &monster, U &victim) {
+void attack(const M &monster, U &victim) {
 	victim.takeDamage(monster.getAttackPower());
 };
 
-template<typename M, typename T>
-void attack(M &monster, Sheriff<T> &victim) {
+template<typename M, typename U, 
+	typename = typename std::enable_if_t
+	<std::is_same<U, Sheriff<typename U::valueType>>::value>>
+void attack(M &monster, U &victim) {
 	victim.takeDamage(monster.getAttackPower());
 	monster.takeDamage(victim.getAttackPower());
 };
