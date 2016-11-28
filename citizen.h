@@ -48,12 +48,12 @@ class Citizen{
 }; 
 
 template<typename T>
-using Teenager = Citizen<T, 11, 18, false>;
+using Teenager = Citizen<T, static_cast<T>(11), static_cast<T>(17), false>;
 
 template<typename T>
-using Adult = Citizen<T, 19, 100, false>;
+using Adult = Citizen<T, static_cast<T>(18), static_cast<T>(100), false>;
 
 template<typename T>
-using Sheriff = Citizen<T, 19, 100, true>;
+using Sheriff = Citizen<T, static_cast<T>(18), static_cast<T>(100), true>;
 
 #endif //CITIZEN_H_

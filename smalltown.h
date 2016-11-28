@@ -35,10 +35,10 @@ class SmallTown {
 		}
 
 		template<size_t i>
-		void atackCitizens() {
+		void attackCitizens() {
 			if (i > 0) {
-				atack(monster_, std::get<i - 1>(citizens_));
-				atackCitizens<i - 1>();
+				attack(monster_, std::get<i - 1>(citizens_));
+				attackCitizens<i - 1>();
 			}
 		}
 
@@ -67,7 +67,7 @@ class SmallTown {
 				std::cout << "MONSTER WON\n";
 			}
 			else if (time_ == 0) {	// TODO: Fibonacci numbers
-				atackCitizens<sizeof...(C)>();
+				attackCitizens<sizeof...(C)>();
 			}
 			time_ = (time_ + timeStep) % t1;
 		}
