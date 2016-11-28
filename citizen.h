@@ -1,11 +1,11 @@
 // Konrad Majewski, Marcin Wawerka
 #ifndef CITIZEN_H_
 #define CITIZEN_H_
-#include <cassert>
+#include <assert.h>
 #include <type_traits>
 #include <algorithm>
 
-template <typename T, T minAge, T maxAge, bool isArmed,
+template <typename T, int minAge, int maxAge, bool isArmed,
 	typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type>
 class Citizen{
 	private:
@@ -48,12 +48,12 @@ class Citizen{
 }; 
 
 template<typename T>
-using Teenager = Citizen<T, static_cast<T>(11), static_cast<T>(17), false>;
+using Teenager = Citizen<T, 11, 17, false>;
 
 template<typename T>
-using Adult = Citizen<T, static_cast<T>(18), static_cast<T>(100), false>;
+using Adult = Citizen<T ,18, 100, false>;
 
 template<typename T>
-using Sheriff = Citizen<T, static_cast<T>(18), static_cast<T>(100), true>;
+using Sheriff = Citizen<T, 18, 100, true>;
 
 #endif //CITIZEN_H_
