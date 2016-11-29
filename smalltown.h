@@ -6,7 +6,8 @@
 #include "monster.h"
 
 #include <iostream>
-#include <utility>
+#include <string>
+#include <tuple>
 
 namespace {
 	// TODO Fibonacci numbers class
@@ -25,29 +26,31 @@ class SmallTown {
 		size_t aliveCounter;
 
 		template<size_t i>
-		void countAliveCitizens() {
-			if (i > 0) {
-				if (std::get<i - 1>(citizens_).getHealth > 0) {
-					aliveCounter++;
-				}
-				countAliveCitizens<i - 1>();
+		int countAliveCitizens() {
+			int counter = 0;
+			if (i + 1 < sizeof...(C)) {
+				counter = countAliveCitizens<std::min(i + 1, (sizeof...(C)) - 1)>();
 			}
+			if (std::get<i>(citizens_).getHealth() != 0) {
+				counter++;
+			}
+			return counter;
 		}
 
 		template<size_t i>
 		void attackCitizens() {
-			if (i > 0) {
-				attack(monster_, std::get<i - 1>(citizens_));
-				attackCitizens<i - 1>();
+			attack(monster_, std::get<i>(citizens_));
+			if (i + 1 < sizeof...(C)) {
+				attackCitizens<std::min(i + 1, (sizeof...(C)) - 1)>();
 			}
 		}
 
   	public:
-		SmallTown(const M& monster, const C&... citizens)
+		SmallTown(const M &monster, const C&... citizens)
 				: monster_(monster), time_(t0), citizens_(citizens...) {
 			static_assert(0 <= t0 && t0 <= t1, "INCORRECT TIME VALUES");
 
-			countAliveCitizens<sizeof...(C)>();
+			aliveCounter = countAliveCitizens<0>();
 		}
 
 		std::tuple<std::string, decltype(monster_.getHealth()), size_t> getStatus() {
@@ -67,7 +70,8 @@ class SmallTown {
 				std::cout << "MONSTER WON\n";
 			}
 			else if (time_ == 0) {	// TODO: Fibonacci numbers
-				attackCitizens<sizeof...(C)>();
+				attackCitizens<0>();
+				aliveCounter = countAliveCitizens<0>();
 			}
 			time_ = (time_ + timeStep) % t1;
 		}
