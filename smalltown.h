@@ -8,14 +8,9 @@
 #include <iostream>
 #include <string>
 #include <tuple>
+#include <type_traits>
 
-namespace {
-	// TODO Fibonacci numbers class
-	/*template<typename U, U limit>
-	class FibonacciNumbers {
-
-	};*/
-}
+// TODO Fibonacci numbers class
 
 template<typename M, typename U, U t0, U t1, typename... C>
 class SmallTown {
@@ -25,32 +20,37 @@ class SmallTown {
 		std::tuple<C...> citizens_;
 		size_t aliveCounter;
 
-		template<size_t i>
-		int countAliveCitizens() {
-			int counter = 0;
-			if (i + 1 < sizeof...(C)) {
-				counter = countAliveCitizens<std::min(i + 1, (sizeof...(C)) - 1)>();
-			}
+		template<size_t i = 0>
+		typename std::enable_if_t<i < sizeof...(C), int> countAliveCitizens() {
 			if (std::get<i>(citizens_).getHealth() != 0) {
-				counter++;
+				return 1 + countAliveCitizens<i + 1>();
 			}
-			return counter;
+			else {
+				return countAliveCitizens<i + 1>();
+			}
 		}
 
-		template<size_t i>
-		void attackCitizens() {
-			attack(monster_, std::get<i>(citizens_));
-			if (i + 1 < sizeof...(C)) {
-				attackCitizens<std::min(i + 1, (sizeof...(C)) - 1)>();
-			}
+		template<size_t i = 0>
+		typename std::enable_if_t<i == sizeof...(C), int> countAliveCitizens() {
+			return 0;
 		}
+
+
+		template<size_t i = 0>
+		typename std::enable_if_t<i < sizeof...(C), void> attackCitizens() {
+			attack(monster_, std::get<i>(citizens_));
+			attackCitizens<i + 1>();
+		}
+
+		template<size_t i = 0>
+		typename std::enable_if_t<i == sizeof...(C), void> attackCitizens() {}
 
   	public:
 		SmallTown(const M &monster, const C&... citizens)
 				: monster_(monster), time_(t0), citizens_(citizens...) {
 			static_assert(0 <= t0 && t0 <= t1, "INCORRECT TIME VALUES");
 
-			aliveCounter = countAliveCitizens<0>();
+			aliveCounter = countAliveCitizens();
 		}
 
 		std::tuple<std::string, decltype(monster_.getHealth()), size_t> getStatus() {
@@ -70,8 +70,8 @@ class SmallTown {
 				std::cout << "MONSTER WON\n";
 			}
 			else if (time_ == 0) {	// TODO: Fibonacci numbers
-				attackCitizens<0>();
-				aliveCounter = countAliveCitizens<0>();
+				attackCitizens();
+				aliveCounter = countAliveCitizens();
 			}
 			time_ = (time_ + timeStep) % t1;
 		}
