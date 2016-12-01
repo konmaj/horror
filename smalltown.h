@@ -15,6 +15,9 @@
 
 template<typename M, typename U, U t0, U t1, typename... C>
 class SmallTown {
+	static_assert(std::is_integral<U>::value, "TIME TYPE IS NOT INTEGRAL");
+	static_assert(0 <= t0 && t0 <= t1, "INCORRECT TIME VALUES");
+
 private:
 	M monster_;
 	U time_;
@@ -85,7 +88,6 @@ private:
 public:
 	SmallTown(const M &monster, const C&... citizens) 
 			: monster_(monster), time_(t0), citizens_(citizens...) {
-		static_assert(0 <= t0 && t0 <= t1, "INCORRECT TIME VALUES");
 		aliveCounter_ = countAliveCitizens();
 	}
 
