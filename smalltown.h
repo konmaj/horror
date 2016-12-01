@@ -78,7 +78,9 @@ private:
 
 	template<size_t i = 0>
 	typename std::enable_if_t<(i < sizeof...(C)), void> attackCitizens() {
-		attack(monster_, std::get<i>(citizens_));
+		if (std::get<i>(citizens_).getHealth() != 0) {
+			attack(monster_, std::get<i>(citizens_));
+		}
 		attackCitizens<i + 1>();
 	}
 
